@@ -76,7 +76,7 @@ class LeNet(Module):  #@save
         Defined in :numref:`sec_classification`"""
         Y_hat = state.apply_fn({'params': params,
                                 'batch_stats': state.batch_stats},  # BatchNorm Only
-                               *X, mutable=['batch_stats'] if train else False )
+                               *X)
         Y_hat = jnp.reshape(Y_hat, (-1, Y_hat.shape[-1]))
         preds = jnp.astype(jnp.argmax(Y_hat, axis=1), Y.dtype)
         compare = jnp.astype(preds == jnp.reshape(Y, -1), jnp.float32)
@@ -93,7 +93,7 @@ class LeNet(Module):  #@save
                                                          mutated_vars['batch_stats'])
         grads = lax.pmean(grads, 'devices')
     
-        acc = self.accuracy(params, batch[:-1], batch[-1], state, train=True)
+        # acc = self.accuracy(params, batch[:-1], batch[-1], state, train=True)
         acc = lax.pmean(acc, 'devices')
         
         return ({"loss": l, "accuracy":acc}, mutated_vars), grads
