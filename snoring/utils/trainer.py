@@ -26,7 +26,8 @@ class Trainer(HyperParameters):
         model.trainer = self
         self.model = model
         self.model.board = self.board
-        self.model.board.logger.log_hyperparams(self.model.hparams)
+        
+        self.model.board.logger.log_hyperparams()
 
     def fit(self, model, data, key=None):
         self.prepare_data(data)
