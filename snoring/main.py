@@ -14,6 +14,8 @@ from types import FunctionType
 from typing import Any
 # import inspect
 # import tensorflow as tf
+import tensorflow as tf
+tf.config.experimental.set_visible_devices([], 'GPU')
 # import tensorflow_datasets as tfds
 import optax
 # from flax.training import train_state
@@ -113,6 +115,8 @@ class LeNet(Module):  #@save
 
 from pytorch_lightning.loggers import WandbLogger
 from snoring.utils.common import ProgressBoard
+
+# LeNet().init(jax.random.PRNGKey(0), jnp.ones([128,28,28,1]))
 
 wandb_logger = WandbLogger(project="MNIST")
 board = ProgressBoard(wandb_logger)
