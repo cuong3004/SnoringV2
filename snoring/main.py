@@ -25,8 +25,10 @@ from flax.core import freeze, unfreeze
 # import collections
 from snoring.utils.module import Module, FashionMNIST
 from snoring.utils.trainer import Trainer
+import os
+# os.environ["JAX_PLATFORM_NAME"] = "cpu"
 
-print(jax.local_device_count())
+print("Jax device count:", jax.local_device_count())
 
 class LeNet(Module):  #@save
     """The LeNet-5 model."""
@@ -42,15 +44,13 @@ class LeNet(Module):  #@save
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             nn.Conv(features=16, kernel_size=(5, 5), padding='VALID',
                     kernel_init=self.kernel_init()),
-            nn.BatchNorm(True),
+            nn.BatchNorm(False),
             nn.sigmoid,
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
-            # lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             lambda x: x.reshape((x.shape[0], -1)),  # flatten
-            
             nn.Dense(features=120, kernel_init=self.kernel_init()),
             nn.sigmoid,
-            nn.Dense(features=64, kernel_init=self.kernel_init()),
+            nn.Dense(features=84, kernel_init=self.kernel_init()),
             nn.sigmoid,
             nn.Dense(features=self.num_classes, kernel_init=self.kernel_init())
         ])
