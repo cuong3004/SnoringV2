@@ -1,7 +1,7 @@
 import os
 
 # Thiết lập biến môi trường
-os.environ["XLA_FLAGS"] = "--xla_force_host_platform_device_count=2"
+# os.environ["XLA_FLAGS"] = "--xla_force_host_platform_device_count=2"
 
 from types import FunctionType
 import jax
@@ -45,8 +45,10 @@ class LeNet(Module):  #@save
             nn.BatchNorm(True),
             nn.sigmoid,
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
+            # lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             lambda x: x.reshape((x.shape[0], -1)),  # flatten
-            # nn.Dense(features=120, kernel_init=self.kernel_init()),
+            
+            nn.Dense(features=120, kernel_init=self.kernel_init()),
             nn.sigmoid,
             nn.Dense(features=64, kernel_init=self.kernel_init()),
             nn.sigmoid,
@@ -109,8 +111,14 @@ class LeNet(Module):  #@save
         return optax.sgd(self.lr)
 
 
+from pytorch_lightning.loggers import WandbLogger
+from snoring.utils.common import ProgressBoard
 
-trainer = Trainer(max_epochs=10)
+wandb_logger = WandbLogger(project="MNIST")
+board = ProgressBoard(wandb_logger)
+
+
+trainer = Trainer(max_epochs=10, board=board)
 data = FashionMNIST(batch_size=128)
 model = LeNet(lr=0.1)
 trainer.fit(model, data)

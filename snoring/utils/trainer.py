@@ -96,6 +96,8 @@ class Trainer(HyperParameters):
                                                                self.prepare_batch(batch),
                                                                self.state)
                 
+                print(pl_metrics)
+                
                 self.state = self.state.apply_gradients(grads=grads)
                 # Can be ignored for models without Dropout Layers
                 self.state = self.state.replace(
@@ -103,8 +105,10 @@ class Trainer(HyperParameters):
                 )
                 self.state = self.state.replace(batch_stats=mutated_vars['batch_stats'])
                 
-                metric = flax.jax_utils.unreplicate(pl_metrics)
-                
+                metrics = flax.jax_utils.unreplicate(pl_metrics)
+                for k, v in metrics.items():
+                    self.model.plot(k, v, train=False)
+                    
                 self.train_batch_idx += 1
         else:
             assert False
@@ -120,15 +124,13 @@ class Trainer(HyperParameters):
                                        self.prepare_batch(batch),
                                        self.state)
             
-            metric = flax.jax_utils.unreplicate(pl_metrics)
+            metrics = flax.jax_utils.unreplicate(pl_metrics)
+            for k, v in metrics.items():
+                self.model.plot(k, v, train=False)
+            
             
             self.val_batch_idx += 1
 
-    def __init__(self, max_epochs, num_gpus=0, gradient_clip_val=0):
-        """Defined in :numref:`sec_use_gpu`"""
-        self.save_hyperparameters()
-#         self.gpus = [d2l.gpu(i) for i in range(min(num_gpus, d2l.num_gpus()))]
-    
 
     def prepare_batch(self, batch):
         """Defined in :numref:`sec_use_gpu`"""

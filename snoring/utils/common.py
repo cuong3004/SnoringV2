@@ -33,7 +33,7 @@ class ProgressBoard(HyperParameters):
     """The board that plots data points in animation.
 
     Defined in :numref:`sec_oo-design`"""
-    def __init__(self):
+    def __init__(self, logger):
         self.save_hyperparameters()
 
     def draw(self, x, y, label, every_n=1):
