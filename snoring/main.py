@@ -37,6 +37,7 @@ class LeNet(Module):  #@save
     lr: float = 0.1
     num_classes: int = 10
     kernel_init: FunctionType = nn.initializers.xavier_uniform
+    training: bool = False
 
     def setup(self):
         self.net = nn.Sequential([
@@ -46,7 +47,7 @@ class LeNet(Module):  #@save
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             nn.Conv(features=16, kernel_size=(5, 5), padding='VALID',
                     kernel_init=self.kernel_init()),
-            nn.BatchNorm(False),
+            nn.BatchNorm(not self.training),
             nn.sigmoid,
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             lambda x: x.reshape((x.shape[0], -1)),  # flatten
