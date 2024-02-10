@@ -94,9 +94,9 @@ class LeNet(Module):  #@save
         grads = lax.pmean(grads, 'devices')
     
         # acc = self.accuracy(params, batch[:-1], batch[-1], state, train=True)
-        acc = lax.pmean(acc, 'devices')
+        # acc = lax.pmean(acc, 'devices')
         
-        return ({"loss": l, "accuracy":acc}, mutated_vars), grads
+        return ({"loss": l}, mutated_vars), grads
 
     def validation_step(self, params, batch, state):
         print("valid")
