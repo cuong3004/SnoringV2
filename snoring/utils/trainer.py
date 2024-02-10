@@ -26,6 +26,7 @@ class Trainer(HyperParameters):
         model.trainer = self
         self.model = model
         self.model.board = self.board
+        self.model.board.logger.log_hyperparams(self.model.hparams)
 
     def fit(self, model, data, key=None):
         self.prepare_data(data)
@@ -84,6 +85,7 @@ class Trainer(HyperParameters):
                                                     axis_name='devices')
         
         for self.epoch in range(self.max_epochs):
+            print(f"[{self.epoch}/{self.max_epochs}]")
             self.fit_epoch()
 
     def fit_epoch(self):
@@ -97,7 +99,7 @@ class Trainer(HyperParameters):
                                                                self.prepare_batch(batch),
                                                                self.state)
                 
-                print(pl_metrics)
+                # print(pl_metrics)
                 
                 self.state = self.state.apply_gradients(grads=grads)
                 # Can be ignored for models without Dropout Layers
