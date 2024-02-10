@@ -25,6 +25,7 @@ class Trainer(HyperParameters):
     def prepare_model(self, model):
         model.trainer = self
         self.model = model
+        self.model.board = self.board
 
     def fit(self, model, data, key=None):
         self.prepare_data(data)
