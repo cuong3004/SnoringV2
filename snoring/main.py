@@ -120,8 +120,9 @@ from snoring.utils.common import ProgressBoard
 # LeNet().init(jax.random.PRNGKey(0), jnp.ones([128,28,28,1]))
 
 wandb_logger = WandbLogger(project="MNIST")
-board = ProgressBoard(wandb_logger)
+wandb_logger.experiment()
 
+board = ProgressBoard(wandb_logger)
 
 trainer = Trainer(max_epochs=10, board=board)
 data = FashionMNIST(batch_size=128)
