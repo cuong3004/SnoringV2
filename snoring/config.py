@@ -41,6 +41,11 @@ args = {
     
     # Debugging-purposes
     'sanity_check': False,
+    
+    #dataset
+    'train_dirs': [
+        'gs://kds-6d7ba0446d397cd2c4c5aef8de75f3ed4147f25dde8f009078a8f64e'
+    ]
 }
 
 # The effective lr should linearly scale with batch size

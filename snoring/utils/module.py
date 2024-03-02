@@ -117,13 +117,15 @@ class AudiosetModule(DataModule):
         super().__init__()
         self.save_hyperparameters()
         
-        input_dtype = jnp.bfloat16 if args.use_tpu else jnp.float32
-        label_dtype = jnp.int16
+        self.input_dtype = jnp.bfloat16 if args.use_tpu else jnp.float32
+        self.label_dtype = jnp.int16
         self.depth = 527
         
-        train_filenames = tf.io.gfile.glob(args['train_dir']+'/*.tfrec')
-        val_filenames = tf.io.gfile.glob(args['val_dir']+'/*.tfrec')
-        test_filenames = tf.io.gfile.glob(args['test_dir']+'/*.tfrec')
+        self.train_filenames = []
+        for train_dir in args['train_dirs']:
+            self.train_filenames.extend(tf.io.gfile.glob(train_dir+'/*.tfrec*'))
+        # val_filenames = tf.io.gfile.glob(args['val_dir']+'/*.tfrec*')
+        # test_filenames = tf.io.gfile.glob(args['test_dir']+'/*.tfrec*')
     
     def decode_audio(self, audio_data):
         # image is of type `tf.uint8`
@@ -180,3 +182,6 @@ class AudiosetModule(DataModule):
         # dataset = dataset.map(normalize_and_resize).prefetch(AUTO)
         # Finally, apply to_jax transformation
         return map(self.to_jax, tfds.as_numpy(dataset))
+    
+    def get_dataloader(self, train):
+        return self.load_dataset()
