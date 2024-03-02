@@ -3,6 +3,9 @@ from snoring.utils.common import HyperParameters
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from flax import linen as nn
+from jax import numpy as jnp
+import jax
+from flax.training.common_utils import shard
 
 class DataModule(HyperParameters):
     """The base class of data.
@@ -107,3 +110,73 @@ class FashionMNIST(DataModule):
         return tfds.as_numpy(
             tf.data.Dataset.from_tensor_slices(process(*data)).batch(
                 self.batch_size).map(resize_fn).shuffle(shuffle_buf))
+        
+
+class AudiosetModule(DataModule):
+    def __init__(self, args):
+        super().__init__()
+        self.save_hyperparameters()
+        
+        input_dtype = jnp.bfloat16 if args.use_tpu else jnp.float32
+        label_dtype = jnp.int16
+        self.depth = 527
+        
+        train_filenames = tf.io.gfile.glob(args['train_dir']+'/*.tfrec')
+        val_filenames = tf.io.gfile.glob(args['val_dir']+'/*.tfrec')
+        test_filenames = tf.io.gfile.glob(args['test_dir']+'/*.tfrec')
+    
+    def decode_audio(self, audio_data):
+        # image is of type `tf.uint8`
+        audio, sr = tf.audio.decode_wav(audio_data["audio"], desired_channels=1)
+        # image = tf.image.decode_jpeg(image_data, channels=3)
+        # image = tf.reshape(image, [args['img_size'], args['img_size'], 3]) 
+        return audio, sr
+    
+    def read_labeled_tfrecord(self, example):
+        # Note how we are defining the example structure here
+        labeled_format = {
+                'audio': tf.io.FixedLenFeature([], tf.string),
+                'ytid': tf.io.FixedLenFeature([], tf.string),
+                'labels': tf.io.VarLenFeature(tf.int64),
+        }
+        parsed_example = tf.io.parse_single_example(example, labeled_format)
+        audio, sr = self.decode_audio(parsed_example['audio'])
+        
+        labels = tf.sparse.to_dense(example['labels'])
+        labels = tf.one_hot(labels, self.depth)
+        labels = tf.reduce_max(labels, axis=0)
+        
+        return {'audio': audio, 'sr':sr, 'label': labels} 
+    
+    def to_jax(self, sample):
+        sample['image'] = jnp.array(sample['image'], dtype=self.input_dtype)
+        sample['label'] = jnp.array(sample['label'], dtype=self.label_dtype)
+        # Convert labels to one_hot
+        sample['label'] = jax.nn.one_hot(sample['label'], self.args['num_labels'], dtype=self.label_dtype, axis=-1)
+        
+        return sample
+    
+    def load_dataset(self, filenames, ordered=False, shuffle_buffer_size=1, drop_remainder=False,\
+                augment=True):
+        AUTO = tf.data.experimental.AUTOTUNE
+        # tf.data runtime will optimize this parameter
+        dataset = tf.data.TFRecordDataset(filenames, num_parallel_reads=AUTO)
+
+        options = tf.data.Options()
+        if not ordered:
+            options.experimental_deterministic = False
+            
+        # Step 1: Read in the data, shuffle and batching
+        dataset = dataset.with_options(options)\
+                    .map(self.read_labeled_tfrecord,
+                        num_parallel_calls=tf.data.experimental.AUTOTUNE)\
+                    .shuffle(shuffle_buffer_size)\
+                    .batch(self.args['batch_size'] * self.args['device_count'], drop_remainder=drop_remainder)
+        
+        # We exemplify augmentation using RandAugment
+        # if augment:
+            # dataset = dataset.map(tf_randaugment, num_parallel_calls=AUTO)
+        # Add `prefetch` at the last step to parallize as much as possible!
+        # dataset = dataset.map(normalize_and_resize).prefetch(AUTO)
+        # Finally, apply to_jax transformation
+        return map(self.to_jax, tfds.as_numpy(dataset))

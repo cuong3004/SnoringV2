@@ -30,6 +30,10 @@ from snoring.utils.trainer import Trainer
 import os
 # os.environ["JAX_PLATFORM_NAME"] = "cpu"
 
+from snoring.config import args
+
+
+
 print("Jax device count:", jax.local_device_count())
 
 class LeNet(Module):  #@save
