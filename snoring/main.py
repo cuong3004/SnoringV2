@@ -82,7 +82,7 @@ class LeNet(Module):  #@save
     
     @partial(jax.jit, static_argnums=(0, 5))
     def accuracy_train(self, params, X, Y, state, averaged=True):
-        Y_hat = state.apply_fn(
+        Y_hat, _ = state.apply_fn(
             {'params': params,
             'batch_stats': state.batch_stats},  # BatchNorm Only 
             *X, mutable=['batch_stats'])
