@@ -19,7 +19,7 @@ class Trainer(HyperParameters):
     def prepare_data(self, data):
         self.train_dataloader = data.train_dataloader()
         self.val_dataloader = data.val_dataloader()
-        self.num_train_batches = 100#len(self.train_dataloader)
+        self.num_train_batches = 200#len(self.train_dataloader)
         self.num_val_batches = 0 #(len(self.val_dataloader)
                                 #if self.val_dataloader is not None else 0)
 
