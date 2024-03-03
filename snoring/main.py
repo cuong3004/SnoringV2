@@ -93,9 +93,13 @@ class LeNet(Module):  #@save
         Y_hat = state.apply_fn({'params': params,
                                 'batch_stats': state.batch_stats},  # BatchNorm Only
                                *X)
-        Y_hat = jnp.reshape(Y_hat, (-1, Y_hat.shape[-1]))
-        preds = jnp.astype(jnp.argmax(Y_hat, axis=1), Y.dtype)
-        compare = jnp.astype(preds == jnp.reshape(Y, -1), jnp.float32)
+        # Y_hat = jnp.reshape(Y_hat, (-1, Y_hat.shape[-1]))
+        threshold = 0.5
+
+# Thresholding operation
+        preds = jnp.where(Y_hat > threshold, 1, 0)
+        # preds = jnp.astype(jnp.argmax(Y_hat, axis=1), Y.dtype)
+        compare = jnp.astype(preds == Y, jnp.float32)
         return jnp.mean(compare) if averaged else compare
     
     def training_step(self, params, batch, state):
