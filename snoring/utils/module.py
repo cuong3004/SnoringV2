@@ -147,7 +147,7 @@ class AudiosetModule(DataModule):
         return {'log_mel': log_mel, 'labels': labels} 
     
     def to_jax(self, sample):
-        sample['log_mel'] = jnp.array(sample['audio'], dtype=self.input_dtype)
+        sample['log_mel'] = jnp.array(sample['log_mel'], dtype=self.input_dtype)
         sample['labels'] = jnp.array(sample['labels'], dtype=self.label_dtype)
         return sample
     
