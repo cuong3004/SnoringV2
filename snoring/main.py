@@ -32,7 +32,6 @@ import os
 
 from snoring.config import args
 
-
 print("Jax device count:", jax.local_device_count())
 
 class LeNet(Module):  #@save
@@ -114,7 +113,7 @@ class LeNet(Module):  #@save
                                                          mutated_vars['batch_stats'])
         grads = lax.pmean(grads, 'devices')
     
-        acc = self.accuracy_train(params, batch[:-1], batch[-1], state, train=True)
+        acc = self.accuracy_train(params, batch[:-1], batch[-1], state)
         acc = lax.pmean(acc, 'devices')
         
         return ({"loss": l, "accuracy":acc}, mutated_vars), grads
