@@ -25,7 +25,7 @@ import functools
 from jax import lax
 from flax.core import freeze, unfreeze
 # import collections
-from snoring.utils.module import Module, FashionMNIST
+from snoring.utils.module import Module, FashionMNIST, AudiosetModule
 from snoring.utils.trainer import Trainer
 import os
 # os.environ["JAX_PLATFORM_NAME"] = "cpu"
@@ -51,9 +51,16 @@ class LeNet(Module):  #@save
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             nn.Conv(features=16, kernel_size=(5, 5), padding='VALID',
                     kernel_init=self.kernel_init()),
-            nn.BatchNorm(not self.training),
             nn.sigmoid,
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
+            nn.Conv(features=32, kernel_size=(5, 5), padding='VALID',
+                    kernel_init=self.kernel_init()),
+            nn.sigmoid,
+            lambda x: nn.avg_pool(x, window_shape=(2, 3), strides=(2, 3)),
+            nn.Conv(features=64, kernel_size=(5, 5), padding='VALID',
+                    kernel_init=self.kernel_init()),
+            nn.sigmoid,
+            lambda x: nn.avg_pool(x, window_shape=(2, 3), strides=(2, 3)),
             lambda x: x.reshape((x.shape[0], -1)),  # flatten
             nn.Dense(features=120, kernel_init=self.kernel_init()),
             nn.sigmoid,
@@ -118,17 +125,17 @@ class LeNet(Module):  #@save
         return optax.sgd(self.lr)
 
 
-from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.loggers import WandbLogger, TensorBoardLogger
 from snoring.utils.common import ProgressBoard
 
 # LeNet().init(jax.random.PRNGKey(0), jnp.ones([128,28,28,1]))
 
-wandb_logger = WandbLogger(project="MNIST")
+wandb_logger = TensorBoardLogger("tb_logs", name="my_model") #WandbLogger(project="MNIST")
 
 
 board = ProgressBoard(wandb_logger)
 
 trainer = Trainer(max_epochs=10, board=board)
-data = FashionMNIST(batch_size=128)
+data = AudiosetModule(args)
 model = LeNet(lr=0.1)
 trainer.fit(model, data)

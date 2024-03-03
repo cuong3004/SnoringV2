@@ -32,6 +32,9 @@ args = {
     'epochs': 16,
     'base_lr': 7e-5, # should directly correspond to `batch_size`
     
+    #use_tpu
+    "use_tpu": use_tpu,
+
     # Data / augmentation 
     'img_size': 512, # 192, 224, 331, 512
     # The actual label number is 104
@@ -44,7 +47,7 @@ args = {
     
     #dataset
     'train_dirs': [
-        'gs://kds-6d7ba0446d397cd2c4c5aef8de75f3ed4147f25dde8f009078a8f64e'
+        'gs://kds-6ac4b92104b0b81a132d18c52e1438047c5fee2726f035421b1e6071'
     ]
 }
 
