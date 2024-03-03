@@ -112,9 +112,12 @@ class Trainer(HyperParameters):
                 
                 metrics = flax.jax_utils.unreplicate(pl_metrics)
                 for k, v in metrics.items():
-                    self.model.plot(k, v, train=False)
+                    self.model.plot(k, v, train=True)
                     
                 self.train_batch_idx += 1
+                
+                if self.train_batch_idx >= self.num_train_batches:
+                    break
         else:
             assert False
         
