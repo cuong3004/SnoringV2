@@ -151,7 +151,7 @@ class AudiosetModule(DataModule):
         sample['labels'] = jnp.array(sample['labels'], dtype=self.label_dtype)
         return sample
     
-    def min_max_normalize(sample, epsilon=1e-7):
+    def min_max_normalize(self, sample, epsilon=1e-7):
         min_val = -80.0
         max_val = 0.0
         sample['log_mel'] = (sample['log_mel'] - min_val) / (max_val - min_val + epsilon)
