@@ -116,7 +116,7 @@ class Trainer(HyperParameters):
                     
                 self.train_batch_idx += 1
                 
-                if self.train_batch_idx >= self.num_train_batches:
+                if self.train_batch_idx % self.num_train_batches == 0:
                     break
         else:
             assert False
