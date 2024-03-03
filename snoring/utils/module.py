@@ -189,4 +189,9 @@ class AudiosetModule(DataModule):
         return map(self.to_jax, tfds.as_numpy(dataset))
     
     def get_dataloader(self, train):
-        return self.load_dataset(self.train_filenames)
+        if train:
+            return self.load_dataset(self.train_filenames)
+        else:
+            return None
+    
+    
