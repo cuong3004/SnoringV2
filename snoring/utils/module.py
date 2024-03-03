@@ -136,7 +136,7 @@ class AudiosetModule(DataModule):
             'ytid': tf.io.FixedLenFeature([], tf.string),
             'labels': tf.io.FixedLenFeature([], tf.string),
         }
-        parsed_example = tf.io.parse_single_example(example, feature_description)
+        example = tf.io.parse_single_example(example, feature_description)
         # audio, sr = self.decode_audio(parsed_example['audio'])
         log_mel = tf.io.decode_raw(example['log_mel'], tf.float32)
         log_mel = tf.reshape(log_mel, (128, 626))
