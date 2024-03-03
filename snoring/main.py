@@ -33,7 +33,6 @@ import os
 from snoring.config import args
 
 
-
 print("Jax device count:", jax.local_device_count())
 
 class LeNet(Module):  #@save
@@ -79,26 +78,28 @@ class LeNet(Module):  #@save
                                         *X, mutable=['batch_stats'],
                                         rngs={'dropout': state.dropout_rng})
         
-        
-        # Y_hat = jnp.reshape(Y_hat, (-1, Y_hat.shape[-1]))
-        # Y = jnp.reshape(Y, (-1,))
         fn = optax.sigmoid_binary_cross_entropy
         return (fn(Y_hat, Y).mean(), updates) if averaged else (fn(Y_hat, Y), updates)
     
     @partial(jax.jit, static_argnums=(0, 5))
-    def accuracy(self, params, X, Y, state, averaged=True, train=True):
-        """Compute the number of correct predictions.
-    
-        Defined in :numref:`sec_classification`"""
-        Y_hat = state.apply_fn({'params': params,
-                                'batch_stats': state.batch_stats},  # BatchNorm Only
-                               *X)
-        # Y_hat = jnp.reshape(Y_hat, (-1, Y_hat.shape[-1]))
-        threshold = 0.5
+    def accuracy_train(self, params, X, Y, state, averaged=True):
+        Y_hat = state.apply_fn(
+            {'params': params,
+            'batch_stats': state.batch_stats},  # BatchNorm Only 
+            *X, mutable=['batch_stats'])
+            
+        preds = jnp.where(Y_hat > 0.5, 1, 0)
+        compare = jnp.astype(preds == Y, jnp.float32)
+        return jnp.mean(compare) if averaged else compare
 
-# Thresholding operation
-        preds = jnp.where(Y_hat > threshold, 1, 0)
-        # preds = jnp.astype(jnp.argmax(Y_hat, axis=1), Y.dtype)
+    @partial(jax.jit, static_argnums=(0, 5))
+    def accuracy_val(self, params, X, Y, state, averaged=True):
+        Y_hat = state.apply_fn(
+            {'params': params,
+            'batch_stats': state.batch_stats},  # BatchNorm Only
+            *X)
+
+        preds = jnp.where(Y_hat > 0.5, 1, 0)
         compare = jnp.astype(preds == Y, jnp.float32)
         return jnp.mean(compare) if averaged else compare
     
@@ -113,7 +114,7 @@ class LeNet(Module):  #@save
                                                          mutated_vars['batch_stats'])
         grads = lax.pmean(grads, 'devices')
     
-        acc = self.accuracy(params, batch[:-1], batch[-1], state, train=True)
+        acc = self.accuracy_train(params, batch[:-1], batch[-1], state, train=True)
         acc = lax.pmean(acc, 'devices')
         
         return ({"loss": l, "accuracy":acc}, mutated_vars), grads
@@ -123,7 +124,7 @@ class LeNet(Module):  #@save
         l, _ = self.loss(params, batch[:-1], batch[-1], state)
         l = jax.lax.pmean(l, 'devices')
         
-        acc = self.accuracy(params, batch[:-1], batch[-1], state, train=False)
+        acc = self.accuracy_val(params, batch[:-1], batch[-1], state)
         acc = lax.pmean(acc, 'devices')
         
         return {"loss": l, "accuracy":acc}
