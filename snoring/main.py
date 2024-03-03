@@ -39,7 +39,7 @@ print("Jax device count:", jax.local_device_count())
 class LeNet(Module):  #@save
     """The LeNet-5 model."""
     lr: float = 0.1
-    num_classes: int = 10
+    num_classes: int = 527
     kernel_init: FunctionType = nn.initializers.xavier_uniform
     training: bool = False
 
@@ -51,10 +51,12 @@ class LeNet(Module):  #@save
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             nn.Conv(features=16, kernel_size=(5, 5), padding='VALID',
                     kernel_init=self.kernel_init()),
+            nn.BatchNorm(not self.training),
             nn.sigmoid,
             lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
             nn.Conv(features=32, kernel_size=(5, 5), padding='VALID',
                     kernel_init=self.kernel_init()),
+            nn.BatchNorm(not self.training),
             nn.sigmoid,
             lambda x: nn.avg_pool(x, window_shape=(2, 3), strides=(2, 3)),
             nn.Conv(features=64, kernel_size=(5, 5), padding='VALID',
@@ -76,9 +78,11 @@ class LeNet(Module):  #@save
                                          'batch_stats': state.batch_stats},
                                         *X, mutable=['batch_stats'],
                                         rngs={'dropout': state.dropout_rng})
-        Y_hat = jnp.reshape(Y_hat, (-1, Y_hat.shape[-1]))
-        Y = jnp.reshape(Y, (-1,))
-        fn = optax.softmax_cross_entropy_with_integer_labels
+        
+        
+        # Y_hat = jnp.reshape(Y_hat, (-1, Y_hat.shape[-1]))
+        # Y = jnp.reshape(Y, (-1,))
+        fn = optax.sigmoid_binary_cross_entropy
         return (fn(Y_hat, Y).mean(), updates) if averaged else (fn(Y_hat, Y), updates)
     
     @partial(jax.jit, static_argnums=(0, 5))
@@ -134,6 +138,8 @@ wandb_logger = WandbLogger(project="MNIST") #TensorBoardLogger("tb_logs", name="
 
 
 board = ProgressBoard(wandb_logger)
+
+
 
 trainer = Trainer(max_epochs=10, board=board)
 data = AudiosetModule(args)

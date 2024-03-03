@@ -41,7 +41,7 @@ class Trainer(HyperParameters):
         params_key, dropout_key = jax.random.split(root_key)
         key = {'params': params_key, 'dropout': dropout_key}
 
-        dummy_input = next(iter(self.train_dataloader))[:-1]
+        dummy_input = next(self.train_dataloader)[:-1]
 #         print(dummy_input.shape)
         variables = model.apply_init(dummy_input, key=key)
         params = variables['params']
