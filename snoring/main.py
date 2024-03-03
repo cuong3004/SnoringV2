@@ -145,7 +145,7 @@ board = ProgressBoard(wandb_logger)
 
 
 
-trainer = Trainer(max_epochs=10, board=board)
+trainer = Trainer(max_epochs=20, board=board)
 data = AudiosetModule(args)
 model = LeNet(lr=0.1)
 trainer.fit(model, data)
