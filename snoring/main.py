@@ -113,10 +113,10 @@ class LeNet(Module):  #@save
                                                          mutated_vars['batch_stats'])
         grads = lax.pmean(grads, 'devices')
     
-        # acc = self.accuracy(params, batch[:-1], batch[-1], state, train=True)
-        # acc = lax.pmean(acc, 'devices')
+        acc = self.accuracy(params, batch[:-1], batch[-1], state, train=True)
+        acc = lax.pmean(acc, 'devices')
         
-        return ({"loss": l}, mutated_vars), grads
+        return ({"loss": l, "accuracy":acc}, mutated_vars), grads
 
     def validation_step(self, params, batch, state):
         print("valid")
@@ -145,7 +145,7 @@ board = ProgressBoard(wandb_logger)
 
 
 
-trainer = Trainer(max_epochs=20, board=board)
+trainer = Trainer(max_epochs=10, board=board)
 data = AudiosetModule(args)
 model = LeNet(lr=0.1)
 trainer.fit(model, data)
