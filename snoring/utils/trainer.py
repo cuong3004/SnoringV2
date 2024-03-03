@@ -6,6 +6,7 @@ from flax.training.common_utils import shard, shard_prng_key
 from flax.core import freeze, unfreeze
 from jax import numpy as jnp
 from typing import Any
+from tqdm import tqdm
 
 class Trainer(HyperParameters):
     """The base class for training models with data.
@@ -95,7 +96,7 @@ class Trainer(HyperParameters):
         self.state = unfreeze(self.state)
         if self.state.batch_stats:
             # Mutable states will be used later (e.g., for batch norm)
-            for batch in self.train_dataloader:                
+            for batch in tqdm(self.train_dataloader, total=self.num_train_batches):                
                 (pl_metrics, mutated_vars), grads = self.model.pl_training_step(self.state.params,
                                                                self.prepare_batch(batch),
                                                                self.state)
