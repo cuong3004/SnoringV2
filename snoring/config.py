@@ -47,7 +47,14 @@ args = {
     
     #dataset
     'train_dirs': [
-        'gs://kds-6ac4b92104b0b81a132d18c52e1438047c5fee2726f035421b1e6071'
+        'gs://kds-6ac4b92104b0b81a132d18c52e1438047c5fee2726f035421b1e6071',
+        'gs://kds-22d045b0ae3553d8b0bc903999aa8ce544593e74ecc99fe9149f04a9',
+        'gs://kds-6f80ca8eaa77391ec3dcff20e7842873b98ddc8abb044d5dd0e99f23',
+        'gs://kds-52dad802a449570726b10367ad8bd3bd62fe04e5c671e6be21ed2494',
+        'gs://kds-3b07f926da9ce362dee51e808ab01cf8209bafff6c5b37c3eb21b47f',
+        'gs://kds-f0643c7ee21cc8c219275deae92d538f15b0777b0e5acae5ac712593',
+        'gs://kds-38363588642f6610c99259e1faba665d5e569457875a8cbe34445755',
+        'gs://kds-e5875d1c6264c5483800c218b0199ca946e019b9e9e6cb141f468594'
     ]
 }
 
