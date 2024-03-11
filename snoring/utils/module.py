@@ -144,18 +144,19 @@ class AudiosetModule(DataModule):
         ytid =  example['ytid']
         labels = tf.io.decode_raw(example['labels'], tf.float32)
 
-        return {'log_mel': log_mel, 'labels': labels}  
+        return {'images': log_mel, 'labels': labels}  
     
     def to_jax(self, sample):
-        sample['log_mel'] = jnp.array(sample['log_mel'], dtype=self.input_dtype)
+        sample['images'] = jnp.array(sample['images'], dtype=self.input_dtype)
+        sample['images'] = jnp.transpose(sample['images'], (0, 3, 1, 2))
         sample['labels'] = jnp.array(sample['labels'], dtype=self.label_dtype)
-        return sample['log_mel'], sample['labels']
+        return sample['images'], sample['labels']
     
     def min_max_normalize(self, sample, epsilon=1e-7):
         min_val = -80.0
         max_val = 0.0
-        sample['log_mel'] = (sample['log_mel'] - min_val) / (max_val - min_val + epsilon)
-        sample['log_mel'] = tf.expand_dims(sample['log_mel'], axis=-1)
+        sample['images'] = (sample['images'] - min_val) / (max_val - min_val + epsilon)
+        sample['images'] = tf.expand_dims(sample['images'], axis=-1)
         return sample
     
     

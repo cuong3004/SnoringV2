@@ -29,7 +29,7 @@ from snoring.utils.module import Module, FashionMNIST, AudiosetModule
 from snoring.utils.trainer import Trainer
 import os
 # os.environ["JAX_PLATFORM_NAME"] = "cpu"
-
+from snoring.dymn_jax.model_jax import get_model
 from snoring.config import args
 
 print("Jax device count:", jax.local_device_count())
@@ -42,32 +42,33 @@ class LeNet(Module):  #@save
     training: bool = False
 
     def setup(self):
-        self.net = nn.Sequential([
-            nn.Conv(features=6, kernel_size=(5, 5), padding='SAME',
-                    kernel_init=self.kernel_init()),
-            nn.sigmoid,
-            lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
-            nn.Conv(features=16, kernel_size=(5, 5), padding='VALID',
-                    kernel_init=self.kernel_init()),
-            nn.BatchNorm(not self.training),
-            nn.sigmoid,
-            lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
-            nn.Conv(features=32, kernel_size=(5, 5), padding='VALID',
-                    kernel_init=self.kernel_init()),
-            nn.BatchNorm(not self.training),
-            nn.sigmoid,
-            lambda x: nn.avg_pool(x, window_shape=(2, 3), strides=(2, 3)),
-            nn.Conv(features=64, kernel_size=(5, 5), padding='VALID',
-                    kernel_init=self.kernel_init()),
-            nn.sigmoid,
-            lambda x: nn.avg_pool(x, window_shape=(2, 3), strides=(2, 3)),
-            lambda x: x.reshape((x.shape[0], -1)),  # flatten
-            nn.Dense(features=120, kernel_init=self.kernel_init()),
-            nn.sigmoid,
-            nn.Dense(features=84, kernel_init=self.kernel_init()),
-            nn.sigmoid,
-            nn.Dense(features=self.num_classes, kernel_init=self.kernel_init())
-        ])
+        self.net = get_model(width_mult=0.4)
+        # self.net = nn.Sequential([
+        #     nn.Conv(features=6, kernel_size=(5, 5), padding='SAME',
+        #             kernel_init=self.kernel_init()),
+        #     nn.sigmoid,
+        #     lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
+        #     nn.Conv(features=16, kernel_size=(5, 5), padding='VALID',
+        #             kernel_init=self.kernel_init()),
+        #     nn.BatchNorm(not self.training),
+        #     nn.sigmoid,
+        #     lambda x: nn.avg_pool(x, window_shape=(2, 2), strides=(2, 2)),
+        #     nn.Conv(features=32, kernel_size=(5, 5), padding='VALID',
+        #             kernel_init=self.kernel_init()),
+        #     nn.BatchNorm(not self.training),
+        #     nn.sigmoid,
+        #     lambda x: nn.avg_pool(x, window_shape=(2, 3), strides=(2, 3)),
+        #     nn.Conv(features=64, kernel_size=(5, 5), padding='VALID',
+        #             kernel_init=self.kernel_init()),
+        #     nn.sigmoid,
+        #     lambda x: nn.avg_pool(x, window_shape=(2, 3), strides=(2, 3)),
+        #     lambda x: x.reshape((x.shape[0], -1)),  # flatten
+        #     nn.Dense(features=120, kernel_init=self.kernel_init()),
+        #     nn.sigmoid,
+        #     nn.Dense(features=84, kernel_init=self.kernel_init()),
+        #     nn.sigmoid,
+        #     nn.Dense(features=self.num_classes, kernel_init=self.kernel_init())
+        # ])
     
     @partial(jax.jit, static_argnums=(0, 5))
     def loss(self, params, X, Y, state, averaged=True):
