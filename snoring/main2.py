@@ -87,9 +87,9 @@ class FlaxLightning(pl.LightningModule):
 
     def prepare_batch(self, batch):
         images, labels = batch 
-        images = images.permute(0,3,1,2)
+        # images = images.permute(0,3,1,2)
         batch = (images, labels)
-        batch = jax.tree_map(lambda torch_array: torch_array.numpy(), batch)
+        # batch = jax.tree_map(lambda torch_array: torch_array.numpy(), batch)
         return shard(batch)
     
     def configure_optimizers(self):
@@ -150,6 +150,16 @@ class FlaxLightning(pl.LightningModule):
         self.log_dict(dict, prog_bar=True)
         self.global_step_ += 1
         return dict
+    
+    def on_fit_end(self):
+        pass
+        # pathlib.Path.mkdir(phd_path / 'checkpoints/ScoreBased', parents=True, exist_ok=True)
+        # eqx.tree_serialise_leaves(phd_path / f"checkpoints/ScoreBased/last.eqx", self.model)
+
+    def on_train_epoch_end(self) -> None:
+        pass
+        # pathlib.Path.mkdir(phd_path / 'checkpoints/ScoreBased', parents=True, exist_ok=True)
+        # eqx.tree_serialise_leaves(phd_path / f"checkpoints/ScoreBased/last.eqx", self.model)
     
     
 
@@ -270,6 +280,6 @@ modelmodule = FlaxLightning(1e-4)
 
 trainer = pl.Trainer(max_epochs=15, devices=1, accelerator="cpu")
 data = AudiosetModule(args)
-train_dataloader = DataIterator(data.train_dataloader())
+train_dataloader = DataIterator(data.train_dataloader(), 100)
 
 trainer.fit(modelmodule, train_dataloader)

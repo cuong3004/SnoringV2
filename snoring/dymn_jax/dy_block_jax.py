@@ -600,7 +600,7 @@ class DY_Block(nn.Module):
 
         self.use_res_connect = cnf.stride == 1 and cnf.input_channels == cnf.out_channels
         # Here, self.context_dim will be a static value unlike dynamic value in PyTorch
-        self.context_dim = jnp.clip(
+        self.context_dim = np.clip(
             make_divisible(self.cnf.expanded_channels // self.context_ratio, 8),
             make_divisible(self.min_context_size * self.cnf.width_mult, 8),
             make_divisible(self.max_context_size * self.cnf.width_mult, 8)
