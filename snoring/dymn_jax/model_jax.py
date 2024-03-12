@@ -97,8 +97,8 @@ class ConvNormActivation:
 
         if norm_layer is not None:
             sub_layer2 = norm_layer()
-            Wrapper( lambda *x: sub_layer2(x[0], not x[1]))
-            layers.append()
+            
+            layers.append(Wrapper( lambda *x: sub_layer2(x[0], not x[1])))
 
         if activation_layer is not None:
             params = {} if inplace is None else {"inplace": inplace}
