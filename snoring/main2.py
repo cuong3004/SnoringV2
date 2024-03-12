@@ -105,7 +105,7 @@ class FlaxLightning(pl.LightningModule):
         key = {'params': params_key, 'dropout': dropout_key}
         # print("OK?")
         dummy_input = jnp.ones(self.hparams.input_shape, dtype=args['input_dtype'])
-
+        
         variables = self.model.init(key, dummy_input)
         variables = jax.tree_map(lambda x : x.astype(args['input_dtype']), variables)
         params = variables['params']
@@ -142,12 +142,13 @@ class FlaxLightning(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         batch = self.prepare_batch(batch)
         images, labels = batch
+        print(images.shape)
         
         (pl_metrics, mutated_vars), grads = self.pl_training_step(self.state.params,
                                                                images,
                                                                labels,
                                                                self.state)
-        
+        print("out grad")
         self.state = self.state.apply_gradients(grads=grads)
         self.state = self.state.replace(
             dropout_rng= jax.pmap(lambda x: jax.random.split(x)[0])(self.state.dropout_rng)
