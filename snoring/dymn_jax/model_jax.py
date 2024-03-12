@@ -9,6 +9,7 @@ from jax import lax
 from collections.abc import Sequence
 from typing import NamedTuple, Union
 from jax._src.typing import Array, DTypeLike
+from snoring.config import args
 # from flax.linen import initializers
 # from flax.core import meta
 # from flax.linen import initializers
@@ -143,7 +144,7 @@ class DyMN(nn.Module):
             assert False
             block = DY_Block
         
-        norm_layer = partial(nn.BatchNorm, epsilon=0.001, momentum=1-0.01, axis=1)
+        norm_layer = partial(nn.BatchNorm, epsilon=0.001, momentum=1-0.01, axis=1, param_dtype=args["input_dtype"])
 
         layers = []
         

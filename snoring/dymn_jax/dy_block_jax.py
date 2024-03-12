@@ -614,7 +614,7 @@ class DY_Block(nn.Module):
         
         activation_layer =nn.activation.hard_swish if self.cnf.use_hs else nn.relu
 
-        norm_layer = partial(nn.BatchNorm, momentum=1-0.01, epsilon=0.001, axis=1)
+        norm_layer = partial(nn.BatchNorm, momentum=1-0.01, epsilon=0.001, axis=1, param_dtype=args["input_dtype"])
 
         # Expand
         # print(self.cnf.expanded_channels, self.cnf.input_channels)
