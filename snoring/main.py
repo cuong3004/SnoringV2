@@ -138,8 +138,8 @@ from pytorch_lightning.loggers import WandbLogger, TensorBoardLogger
 from snoring.utils.common import ProgressBoard
 
 # LeNet().init(jax.random.PRNGKey(0), jnp.ones([128,28,28,1]))
-
-wandb_logger = WandbLogger(project="MNIST") #TensorBoardLogger("tb_logs", name="my_model") #
+# WandbLogger(project="MNIST") 
+wandb_logger = TensorBoardLogger("tb_logs", name="my_model") #
 
 
 board = ProgressBoard(wandb_logger)

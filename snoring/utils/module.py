@@ -6,7 +6,8 @@ from flax import linen as nn
 from jax import numpy as jnp
 import jax
 from flax.training.common_utils import shard
-import tensorflow_io as tfio
+# import tensorflow_io as tfio
+from typing import Iterable
 
 class DataModule(HyperParameters):
     """The base class of data.
@@ -121,7 +122,7 @@ class AudiosetModule(DataModule):
         self.input_dtype = jnp.bfloat16 if args['use_tpu'] else jnp.float32
         self.label_dtype = jnp.int16
         self.depth = 527
-        self.target_length = 32000*11
+        self.target_length = 32000*10
         
         self.train_filenames = []
         for train_dir in args['train_dirs']:
@@ -194,5 +195,24 @@ class AudiosetModule(DataModule):
             return self.load_dataset(self.train_filenames)
         else:
             return None
+        
+
+class DataIterator:
+    def __init__(self, my_iter: Iterable, len_data: int):
+        self.my_iter = my_iter
+        self.index = 0
+        self.len_my_iter = len_data
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index < self.len_my_iter:
+            result = next(self.my_iter)
+            self.index += 1
+            return result
+        else:
+            self.index = 0
+            raise StopIteration
     
     

@@ -382,7 +382,7 @@ if __name__ == "__main__":
 
     model_j = get_model(width_mult=0.4)
 
-    params = model_j.init(jax.random.PRNGKey(0), jnp.ones((2,3,128,128)))
+    params = model_j.init(jax.random.PRNGKey(0), jnp.ones((2,3,128,625)))
     pprint(show_shape(params))
     # MyConv(features=16, kernel_size=(1, 1), strides=(1, 1), padding='VALID', use_bias=False, conv_general_dilated=my_conv_general_dilated)
     # MyConv(
