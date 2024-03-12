@@ -294,7 +294,7 @@ from pytorch_lightning.loggers import WandbLogger, TensorBoardLogger
 
 # LeNet().init(jax.random.PRNGKey(0), jnp.ones([128,28,28,1]))
 # WandbLogger(project="MNIST") 
-# wandb_logger = TensorBoardLogger("tb_logs", name="my_model") #
+wandb_logger = WandbLogger(project="MNIST") 
 
 
 # board = ProgressBoard(wandb_logger)
@@ -302,7 +302,7 @@ from pytorch_lightning.loggers import WandbLogger, TensorBoardLogger
 
 modelmodule = FlaxLightning(1e-4)
 
-trainer = pl.Trainer(max_epochs=15, devices=1, accelerator="cpu")
+trainer = pl.Trainer(max_epochs=15, devices=1, accelerator="cpu", logger=wandb_logger)
 data = AudiosetModule(args)
 train_dataloader = DataIterator(data.train_dataloader(), 1000)
 
