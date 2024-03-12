@@ -143,13 +143,18 @@ class FlaxLightning(pl.LightningModule):
         batch = self.prepare_batch(batch)
         images, labels = batch
         print(images.shape)
+        print(labels.shape)
         
         (pl_metrics, mutated_vars), grads = self.pl_training_step(self.state.params,
                                                                images,
                                                                labels,
                                                                self.state)
+        
+        
         print("out grad")
+        print(jax.tree_map(jnp.shape, grads))
         self.state = self.state.apply_gradients(grads=grads)
+        print("apply grad")
         self.state = self.state.replace(
             dropout_rng= jax.pmap(lambda x: jax.random.split(x)[0])(self.state.dropout_rng)
         )
