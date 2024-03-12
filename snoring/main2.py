@@ -106,6 +106,7 @@ class FlaxLightning(pl.LightningModule):
         dummy_input = jnp.ones(self.hparams.input_shape)
 
         variables = self.model.init(key, dummy_input)
+        variables = jax.tree_map(lambda x : x.astype(args['input_dtype']), variables)
         params = variables['params']
         batch_stats = variables['batch_stats']
         immutable = variables["immutable"]
@@ -288,6 +289,6 @@ modelmodule = FlaxLightning(1e-4)
 
 trainer = pl.Trainer(max_epochs=15, devices=1, accelerator="cpu")
 data = AudiosetModule(args)
-train_dataloader = DataIterator(data.train_dataloader(), 100)
+train_dataloader = DataIterator(data.train_dataloader(), 200)
 
 trainer.fit(modelmodule, train_dataloader)

@@ -2,6 +2,7 @@ import os
 import warnings
 import tensorflow as tf
 import jax 
+from jax import numpy as jnp
 # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 
@@ -28,13 +29,13 @@ args = {
     'experiment_name': 'starter',
     # Efficientnetv2-m
     'model': 'm',
-    'batch_size': 8, 
+    'batch_size': 256 if use_tpu else 8, 
     'epochs': 16,
     'base_lr': 7e-5, # should directly correspond to `batch_size`
     
     #use_tpu
     "use_tpu": use_tpu,
-
+    "input_dtype": jnp.bfloat16 if use_tpu else jnp.float32,
     # Data / augmentation 
     'img_size': 512, # 192, 224, 331, 512
     # The actual label number is 104
