@@ -205,8 +205,11 @@ class DyMN(nn.Module):
         print("xdtype", x.dtype)
         # print(x.shape)
         x = self.layers(x, train)
+        print("xdtype", x.dtype)
         x = self.out_c(x, train)
+        print("xdtype", x.dtype)
         x = self.classifier(x, train)
+        print("xdtype", x.dtype)
         return x
         
 
