@@ -111,7 +111,7 @@ class FlaxLightning(pl.LightningModule):
         params = variables['params']
         batch_stats = variables['batch_stats']
         immutable = variables["immutable"]
-        
+        print("OK output")
         num_params = sum(p.size for p in jax.tree_leaves(params))
         print("Number of parameters:", num_params)
         
