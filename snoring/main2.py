@@ -55,6 +55,7 @@ def loss_fn(params, X, Y, state, averaged=True):
     # print(Y)
     return (fn(Y_hat, Y).mean(), updates) if averaged else (fn(Y_hat, Y), updates)
 
+
 @jax.jit
 def make_train_step(params, x, y, state):
     # print(jax.tree_map(jnp.shape, params))
@@ -149,8 +150,8 @@ class FlaxLightning(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         batch = self.prepare_batch(batch)
         images, labels = batch
-        print(images.shape)
-        print(labels.shape)
+        # print(images.shape)
+        # print(labels.shape)
         
         pl_metrics, self.state = self.pl_training_step(self.state.params,
                                                                images,
@@ -158,10 +159,10 @@ class FlaxLightning(pl.LightningModule):
                                                                self.state)
         
         
-        print("out grad")
+        # print("out grad")
         # print(jax.tree_map(jnp.shape, grads))
         # self.state = self.state.apply_gradients(grads=grads)
-        print("apply grad")
+        # print("apply grad")
         # self.state = self.state.replace(
             # dropout_rng= jax.pmap(lambda x: jax.random.split(x)[0])(self.state.dropout_rng)
         # )
@@ -303,6 +304,6 @@ modelmodule = FlaxLightning(1e-4)
 
 trainer = pl.Trainer(max_epochs=15, devices=1, accelerator="cpu")
 data = AudiosetModule(args)
-train_dataloader = DataIterator(data.train_dataloader(), 200)
+train_dataloader = DataIterator(data.train_dataloader(), 1000)
 
 trainer.fit(modelmodule, train_dataloader)
