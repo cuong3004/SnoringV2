@@ -16,8 +16,8 @@ from jax.config import config
 # config.FLAGS.jax_xla_backend = "tpu_driver"
 # config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
 if platform == "tpu":
-    config.update('jax_default_matmul_precision', 'bfloat16')
-    use_tpu = True
+    # config.update('jax_default_matmul_precision', 'bfloat16')
+    use_tpu = False
 else:
     use_tpu = False
 # print(os.environ['TPU_NAME'])
