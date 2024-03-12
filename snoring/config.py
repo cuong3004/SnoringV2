@@ -3,26 +3,40 @@ import warnings
 import tensorflow as tf
 import jax 
 from jax import numpy as jnp
+from jax.lib import xla_bridge
+platform = xla_bridge.get_backend().platform
 # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 
+import requests 
+from jax.config import config
+
+config.FLAGS.jax_xla_backend = "tpu_driver"
+config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
+config.update('jax_default_matmul_precision', 'bfloat16')
+
+print(os.environ['TPU_NAME'])
+print('Registered (Kaggle) TPU:', config.FLAGS.jax_backend_target)
+
+use_tpu = True
+platform
 # Seems like the new one will break jax
-if 'TPU_NAME' in os.environ and 'KAGGLE_DATA_PROXY_TOKEN' in os.environ:
-    use_tpu = True
+# if 'TPU_NAME' in os.environ and 'KAGGLE_DATA_PROXY_TOKEN' in os.environ:
+#     use_tpu = True
     
-    import requests 
-    from jax.config import config
-    if 'TPU_DRIVER_MODE' not in globals():
-        url = 'http:' + os.environ['TPU_NAME'].split(':')[1] + ':8475/requestversion/tpu_driver_nightly'
-        resp = requests.post(url)
-        TPU_DRIVER_MODE = 1
-    config.FLAGS.jax_xla_backend = "tpu_driver"
-    config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
-    # Enforce bfloat16 multiplication
-    config.update('jax_default_matmul_precision', 'bfloat16')
-    print('Registered (Kaggle) TPU:', config.FLAGS.jax_backend_target)
-else:
-    use_tpu = False
+#     import requests 
+#     from jax.config import config
+#     if 'TPU_DRIVER_MODE' not in globals():
+#         url = 'http:' + os.environ['TPU_NAME'].split(':')[1] + ':8475/requestversion/tpu_driver_nightly'
+#         resp = requests.post(url)
+#         TPU_DRIVER_MODE = 1
+#     config.FLAGS.jax_xla_backend = "tpu_driver"
+#     config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
+#     # Enforce bfloat16 multiplication
+#     config.update('jax_default_matmul_precision', 'bfloat16')
+#     print('Registered (Kaggle) TPU:', config.FLAGS.jax_backend_target)
+# else:
+#     use_tpu = False
 # /////////////////////////////////////////
 
 args = {
