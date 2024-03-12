@@ -366,6 +366,8 @@ class DynamicConv(nn.Module):
 
         x = x.reshape((1, -1, f, t))
         
+        print(x.dtype, aggregate_weight.dtype)
+        
         output = jax.lax.conv_general_dilated(x, rhs=aggregate_weight, window_strides=(self.stride, self.stride),
                                   padding=[(self.padding, self.padding), (self.padding, self.padding)],
                                   dimension_numbers=('NCHW', 'OIHW', 'NCHW'), feature_group_count=b*self.groups)
