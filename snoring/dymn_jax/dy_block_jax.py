@@ -171,7 +171,7 @@ class MyConv(nn.Module):
       pads = [(0, 0), (left_pad, 0), (0, 0)]
       inputs = jnp.pad(inputs, pads)
       padding_lax = 'VALID'
-
+    print(", ", inputs.dtype)
     dimension_numbers = _conv_dimension_numbers(inputs.shape)
     in_features = jnp.shape(inputs)[1]
     if self.shared_weights:
@@ -210,6 +210,7 @@ class MyConv(nn.Module):
       bias = None
 
     inputs, kernel, bias = promote_dtype(inputs, kernel, bias, dtype=self.dtype)
+    print(", ", inputs.dtype)
     if self.shared_weights:
       if self.conv_general_dilated_cls is not None:
         conv_general_dilated = self.conv_general_dilated_cls()
