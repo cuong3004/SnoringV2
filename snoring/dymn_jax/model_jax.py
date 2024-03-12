@@ -79,8 +79,7 @@ class ConvNormActivation:
         if bias is None:
             bias = norm_layer is None
 
-        layers = [
-            conv_layer(
+        sub_layer1 = conv_layer(
                 out_channels,
                 kernel_size,
                 stride,
@@ -90,12 +89,16 @@ class ConvNormActivation:
                 use_bias=bias,
                 conv_general_dilated=my_conv_general_dilated
             )
+        layers = [
+            Wrapper( lambda x, train: (sub_layer1(x), train))
         ]
         
         # print(layers)
 
         if norm_layer is not None:
-            layers.append(norm_layer())
+            sub_layer2 = norm_layer()
+            Wrapper( lambda *x: sub_layer2(x[0], not x[1]))
+            layers.append()
 
         if activation_layer is not None:
             params = {} if inplace is None else {"inplace": inplace}
@@ -195,7 +198,7 @@ class DyMN(nn.Module):
     def __call__(self, x, train: bool=False, debug: bool=False):
         print("xdtype", x.dtype)
         
-        print(self.in_c )
+        print()
         # print(x.shape)
         x = self.in_c(x, train)
         print("xdtype", x.dtype)
