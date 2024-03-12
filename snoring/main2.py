@@ -100,6 +100,7 @@ class FlaxLightning(pl.LightningModule):
 
         root_key = jax.random.PRNGKey(0)
         # print(root_key)
+        print("start fit")
         params_key, dropout_key = jax.random.split(root_key)
         key = {'params': params_key, 'dropout': dropout_key}
         # print("OK?")
