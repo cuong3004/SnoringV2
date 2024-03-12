@@ -103,7 +103,7 @@ class FlaxLightning(pl.LightningModule):
         params_key, dropout_key = jax.random.split(root_key)
         key = {'params': params_key, 'dropout': dropout_key}
         # print("OK?")
-        dummy_input = jnp.ones(self.hparams.input_shape)
+        dummy_input = jnp.ones(self.hparams.input_shape, dtype=args['input_dtype'])
 
         variables = self.model.init(key, dummy_input)
         variables = jax.tree_map(lambda x : x.astype(args['input_dtype']), variables)

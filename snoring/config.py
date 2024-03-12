@@ -29,7 +29,7 @@ args = {
     'experiment_name': 'starter',
     # Efficientnetv2-m
     'model': 'm',
-    'batch_size': 256 if use_tpu else 8, 
+    'batch_size': 128 if use_tpu else 8, 
     'epochs': 16,
     'base_lr': 7e-5, # should directly correspond to `batch_size`
     
