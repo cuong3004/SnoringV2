@@ -117,7 +117,7 @@ class MyConv(nn.Module):
 
   @nn.compact
   def __call__(self, inputs: Array) -> Array:
-    print(", ", inputs.dtype)
+    # print(", ", inputs.dtype)
     kernel_size: Sequence[int]
     if isinstance(self.kernel_size, int):
       kernel_size = (self.kernel_size,)
@@ -144,7 +144,7 @@ class MyConv(nn.Module):
         num_batch_dimensions:
       ]
       inputs = jnp.reshape(inputs, flat_input_shape)
-    print(", ", inputs.dtype)
+    # print(", ", inputs.dtype)
     # self.strides or (1,) * (inputs.ndim - 2)
     strides = maybe_broadcast(self.strides)
     input_dilation = maybe_broadcast(self.input_dilation)
@@ -172,7 +172,7 @@ class MyConv(nn.Module):
       pads = [(0, 0), (left_pad, 0), (0, 0)]
       inputs = jnp.pad(inputs, pads)
       padding_lax = 'VALID'
-    print(", ", inputs.dtype)
+    # print(", ", inputs.dtype)
     dimension_numbers = _conv_dimension_numbers(inputs.shape)
     in_features = jnp.shape(inputs)[1]
     if self.shared_weights:
@@ -211,7 +211,7 @@ class MyConv(nn.Module):
       bias = None
 
     inputs, kernel, bias = promote_dtype(inputs, kernel, bias, dtype=self.dtype)
-    print(", ", inputs.dtype)
+    # print(", ", inputs.dtype)
     if self.shared_weights:
       if self.conv_general_dilated_cls is not None:
         conv_general_dilated = self.conv_general_dilated_cls()
@@ -239,7 +239,7 @@ class MyConv(nn.Module):
     if num_batch_dimensions != 1:
       output_shape = input_batch_shape + y.shape[1:]
       y = jnp.reshape(y, output_shape)
-    print(", ", y.dtype)
+    # print(", ", y.dtype)
     return y
 
 def my_conv_general_dilated(

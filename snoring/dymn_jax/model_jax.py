@@ -45,13 +45,13 @@ class Sequential(nn.Module):
     for layer in self.layers:
         if layer.name in self.name_layer_norm_drop:
             x = layer(x, not train)
-            print("x.btc", x.dtype)
+            # print("x.btc", x.dtype)
         elif layer.name in self.name_DY_Block:
             x = layer(x, train=train)
-            print("x.dtypeDĐ", x.dtype)
+            # print("x.dtypeDĐ", x.dtype)
         else:
             x = layer(x)
-            print("x.dtype", x.dtype)
+            # print("x.dtype", x.dtype)
     return x
 
 
@@ -197,19 +197,19 @@ class DyMN(nn.Module):
             
             
     def __call__(self, x, train: bool=False, debug: bool=False):
-        print("xdtype", x.dtype)
+        # print("xdtype", x.dtype)
         
-        print()
+        # print()
         # print(x.shape)
         x = self.in_c(x, train)
-        print("xdtype", x.dtype)
+        # print("xdtype", x.dtype)
         # print(x.shape)
         x = self.layers(x, train)
-        print("xdtype", x.dtype)
+        # print("xdtype", x.dtype)
         x = self.out_c(x, train)
-        print("xdtype", x.dtype)
+        # print("xdtype", x.dtype)
         x = self.classifier(x, train)
-        print("xdtype", x.dtype)
+        # print("xdtype", x.dtype)
         return x
         
 
