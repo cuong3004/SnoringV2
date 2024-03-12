@@ -101,7 +101,7 @@ class MyConv(nn.Module):
   use_bias: bool = True
   mask: Optional[Array] = None
   dtype: Optional[Dtype] = args['input_dtype']
-  param_dtype: Dtype = jnp.float32
+  param_dtype: Dtype = args['input_dtype']
   precision: PrecisionLike = None
   kernel_init: Callable[[PRNGKey, Shape, Dtype], Array] = default_kernel_init
   bias_init: Callable[
