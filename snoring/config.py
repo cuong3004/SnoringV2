@@ -11,17 +11,20 @@ os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 import requests 
 from jax.config import config
 
-print(config.FLAGS.jax_xla_backend)
-print(config.FLAGS.jax_backend_target)
+# print(config.FLAGS.jax_xla_backend)
+# print(config.FLAGS.jax_backend_target)
 # config.FLAGS.jax_xla_backend = "tpu_driver"
 # config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
-config.update('jax_default_matmul_precision', 'bfloat16')
+if platform == "tpu":
+    config.update('jax_default_matmul_precision', 'bfloat16')
+    use_tpu = True
+else:
+    use_tpu = False
+# print(os.environ['TPU_NAME'])
+# print('Registered (Kaggle) TPU:', config.FLAGS.jax_backend_target)
 
-print(os.environ['TPU_NAME'])
-print('Registered (Kaggle) TPU:', config.FLAGS.jax_backend_target)
-
-use_tpu = True
-platform
+# use_tpu = True
+# platform
 # Seems like the new one will break jax
 # if 'TPU_NAME' in os.environ and 'KAGGLE_DATA_PROXY_TOKEN' in os.environ:
 #     use_tpu = True
