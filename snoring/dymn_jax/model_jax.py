@@ -44,10 +44,13 @@ class Sequential(nn.Module):
     for layer in self.layers:
         if layer.name in self.name_layer_norm_drop:
             x = layer(x, not train)
+            print("x.btc", x.dtype)
         elif layer.name in self.name_DY_Block:
             x = layer(x, train=train)
+            print("x.dtypeDĐ", x.dtype)
         else:
             x = layer(x)
+            print("x.dtype", x.dtype)
     return x
 
 
@@ -79,7 +82,8 @@ class ConvNormActivation:
         if bias is None:
             bias = norm_layer is None
 
-        sub_layer1 = conv_layer(
+        layers = [
+            conv_layer(
                 out_channels,
                 kernel_size,
                 stride,
@@ -89,16 +93,12 @@ class ConvNormActivation:
                 use_bias=bias,
                 conv_general_dilated=my_conv_general_dilated
             )
-        layers = [
-            Wrapper( lambda x, train: (sub_layer1(x), train))
         ]
         
         # print(layers)
 
         if norm_layer is not None:
-            sub_layer2 = norm_layer()
-            
-            layers.append(Wrapper( lambda *x: sub_layer2(x[0], not x[1])))
+            layers.append(norm_layer())
 
         if activation_layer is not None:
             params = {} if inplace is None else {"inplace": inplace}
