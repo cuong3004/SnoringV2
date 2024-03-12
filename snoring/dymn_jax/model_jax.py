@@ -193,6 +193,7 @@ class DyMN(nn.Module):
             
             
     def __call__(self, x, train: bool=False, debug: bool=False):
+        print("xdtype", x.dtype)
         # print(x.shape)
         x = self.in_c(x, train)
         # print(x.shape)
