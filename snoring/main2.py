@@ -107,6 +107,10 @@ class FlaxLightning(pl.LightningModule):
         variables = self.model.init(key, dummy_input)
         params = variables['params']
         batch_stats = variables['batch_stats']
+        
+        num_params = sum(p.size for p in jax.tree_leaves(params))
+        print("Number of parameters:", num_params)
+        
 
         # print(batch_stats)
 
@@ -134,7 +138,7 @@ class FlaxLightning(pl.LightningModule):
         images, labels = batch
         
         (pl_metrics, mutated_vars), grads = self.pl_training_step(self.state.params,
-                                                               images.transpose(0,1,3,4,2),
+                                                               images,
                                                                labels,
                                                                self.state)
         

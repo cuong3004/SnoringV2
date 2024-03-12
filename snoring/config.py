@@ -47,7 +47,7 @@ args = {
     
     #dataset
     'train_dirs': [
-        'gs://kds-6ac4b92104b0b81a132d18c52e1438047c5fee2726f035421b1e6071',
+        # 'gs://kds-6ac4b92104b0b81a132d18c52e1438047c5fee2726f035421b1e6071',
         'gs://kds-22d045b0ae3553d8b0bc903999aa8ce544593e74ecc99fe9149f04a9',
         'gs://kds-6f80ca8eaa77391ec3dcff20e7842873b98ddc8abb044d5dd0e99f23',
         'gs://kds-52dad802a449570726b10367ad8bd3bd62fe04e5c671e6be21ed2494',
