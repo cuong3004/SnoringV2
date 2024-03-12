@@ -68,8 +68,15 @@ def make_train_step(params, x, y, state):
                                                          mutated_vars['batch_stats'])
 
     grads = jax.lax.pmean(grads, 'devices')
+    
+    state = state.apply_gradients(grads=grads)
+    
+    state = state.replace(
+            dropout_rng= jax.random.split(state.dropout_rng)[0]
+        )
+    state = state.replace(batch_stats=mutated_vars['batch_stats'])
 
-    return ({"loss": l}, mutated_vars), grads
+    return {"loss": l}, state
 
 
 
@@ -145,20 +152,20 @@ class FlaxLightning(pl.LightningModule):
         print(images.shape)
         print(labels.shape)
         
-        (pl_metrics, mutated_vars), grads = self.pl_training_step(self.state.params,
+        pl_metrics, self.state = self.pl_training_step(self.state.params,
                                                                images,
                                                                labels,
                                                                self.state)
         
         
         print("out grad")
-        print(jax.tree_map(jnp.shape, grads))
-        self.state = self.state.apply_gradients(grads=grads)
+        # print(jax.tree_map(jnp.shape, grads))
+        # self.state = self.state.apply_gradients(grads=grads)
         print("apply grad")
-        self.state = self.state.replace(
-            dropout_rng= jax.pmap(lambda x: jax.random.split(x)[0])(self.state.dropout_rng)
-        )
-        self.state = self.state.replace(batch_stats=mutated_vars['batch_stats'])
+        # self.state = self.state.replace(
+            # dropout_rng= jax.pmap(lambda x: jax.random.split(x)[0])(self.state.dropout_rng)
+        # )
+        # self.state = self.state.replace(batch_stats=mutated_vars['batch_stats'])
 
         metrics = flax.jax_utils.unreplicate(pl_metrics)
         
