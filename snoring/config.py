@@ -6,25 +6,25 @@ from jax import numpy as jnp
 # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 
-# # Seems like the new one will break jax
-# if 'TPU_NAME' in os.environ and 'KAGGLE_DATA_PROXY_TOKEN' in os.environ:
-#     use_tpu = True
+# Seems like the new one will break jax
+if 'TPU_NAME' in os.environ and 'KAGGLE_DATA_PROXY_TOKEN' in os.environ:
+    use_tpu = True
     
-#     import requests 
-#     from jax.config import config
-#     if 'TPU_DRIVER_MODE' not in globals():
-#         url = 'http:' + os.environ['TPU_NAME'].split(':')[1] + ':8475/requestversion/tpu_driver_nightly'
-#         resp = requests.post(url)
-#         TPU_DRIVER_MODE = 1
-#     config.FLAGS.jax_xla_backend = "tpu_driver"
-#     config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
-#     # Enforce bfloat16 multiplication
-#     config.update('jax_default_matmul_precision', 'bfloat16')
-#     print('Registered (Kaggle) TPU:', config.FLAGS.jax_backend_target)
-# else:
-#     use_tpu = False
+    import requests 
+    from jax.config import config
+    if 'TPU_DRIVER_MODE' not in globals():
+        url = 'http:' + os.environ['TPU_NAME'].split(':')[1] + ':8475/requestversion/tpu_driver_nightly'
+        resp = requests.post(url)
+        TPU_DRIVER_MODE = 1
+    config.FLAGS.jax_xla_backend = "tpu_driver"
+    config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
+    # Enforce bfloat16 multiplication
+    config.update('jax_default_matmul_precision', 'bfloat16')
+    print('Registered (Kaggle) TPU:', config.FLAGS.jax_backend_target)
+else:
+    use_tpu = False
 # /////////////////////////////////////////
-use_tpu = True
+
 args = {
     'experiment_name': 'starter',
     # Efficientnetv2-m
@@ -73,3 +73,5 @@ args['test_dir'] = os.path.join(args['data_dir'], 'test')
 
 print('Running on', args['device_count'], 'processors')
 print(jax.devices())
+
+print(args)
