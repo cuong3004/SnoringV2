@@ -11,8 +11,10 @@ os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 import requests 
 from jax.config import config
 
-config.FLAGS.jax_xla_backend = "tpu_driver"
-config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
+print(config.FLAGS.jax_xla_backend)
+print(config.FLAGS.jax_backend_target)
+# config.FLAGS.jax_xla_backend = "tpu_driver"
+# config.FLAGS.jax_backend_target = os.environ['TPU_NAME']
 config.update('jax_default_matmul_precision', 'bfloat16')
 
 print(os.environ['TPU_NAME'])
