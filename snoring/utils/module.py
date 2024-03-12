@@ -120,7 +120,7 @@ class AudiosetModule(DataModule):
         self.save_hyperparameters()
         
         self.input_dtype = jnp.bfloat16 if args['use_tpu'] else jnp.float32
-        self.label_dtype = jnp.int16
+        self.label_dtype = self.input_dtype
         self.depth = 527
         self.target_length = 32000*10
         
