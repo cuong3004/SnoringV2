@@ -239,6 +239,7 @@ class MyConv(nn.Module):
     if num_batch_dimensions != 1:
       output_shape = input_batch_shape + y.shape[1:]
       y = jnp.reshape(y, output_shape)
+    print(", ", y.dtype)
     return y
 
 def my_conv_general_dilated(
