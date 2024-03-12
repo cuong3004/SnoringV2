@@ -39,22 +39,23 @@ from flax.training import train_state
 
 print("Jax device count:", jax.local_device_count())
 
-# @partial(jax.jit, static_argnums=(4))
+@partial(jax.jit, static_argnums=(4))
 def loss_fn(params, X, Y, state, averaged=True):
     """Defined in :numref:`subsec_layer-normalization-in-bn`"""
 
     Y_hat, updates = state.apply_fn({'params': params,
-                                        'batch_stats': state.batch_stats},
+                                        'batch_stats': state.batch_stats,
+                                        'immutable': state.immutable},
                                     X, mutable=['batch_stats'],
                                     rngs={'dropout': state.dropout_rng})
 
-    fn = optax.softmax_cross_entropy_with_integer_labels
+    fn = optax.sigmoid_binary_cross_entropy
 
     # Y = jax.nn.one_hot(Y, 10)
     # print(Y)
     return (fn(Y_hat, Y).mean(), updates) if averaged else (fn(Y_hat, Y), updates)
 
-# @jax.jit
+@jax.jit
 def make_train_step(params, x, y, state):
     # print(jax.tree_map(jnp.shape, params))
     # print(x.shape)
@@ -107,6 +108,7 @@ class FlaxLightning(pl.LightningModule):
         variables = self.model.init(key, dummy_input)
         params = variables['params']
         batch_stats = variables['batch_stats']
+        immutable = variables["immutable"]
         
         num_params = sum(p.size for p in jax.tree_leaves(params))
         print("Number of parameters:", num_params)
@@ -117,11 +119,13 @@ class FlaxLightning(pl.LightningModule):
         class TrainState(train_state.TrainState):
             batch_stats: Any
             dropout_rng: jax.Array
+            immutable: Any
 
         state = TrainState.create(apply_fn=self.model.apply,
                                        params=params,
                                        batch_stats=batch_stats,
                                        dropout_rng=dropout_key,
+                                       immutable=immutable,
                                        tx=self.optim)
 
         pl_state = flax.jax_utils.replicate(state)

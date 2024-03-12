@@ -215,4 +215,7 @@ class DataIterator:
             self.index = 0
             raise StopIteration
     
+    def __len__(self):
+        return self.len_my_iter
+    
     
