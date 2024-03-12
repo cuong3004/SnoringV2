@@ -116,7 +116,7 @@ class MyConv(nn.Module):
 
   @nn.compact
   def __call__(self, inputs: Array) -> Array:
-
+    print(", ", inputs.dtype)
     kernel_size: Sequence[int]
     if isinstance(self.kernel_size, int):
       kernel_size = (self.kernel_size,)
@@ -143,7 +143,7 @@ class MyConv(nn.Module):
         num_batch_dimensions:
       ]
       inputs = jnp.reshape(inputs, flat_input_shape)
-
+    print(", ", inputs.dtype)
     # self.strides or (1,) * (inputs.ndim - 2)
     strides = maybe_broadcast(self.strides)
     input_dilation = maybe_broadcast(self.input_dilation)
