@@ -14,6 +14,7 @@ from flax.core import meta
 from flax.linen import initializers
 from flax.linen.dtypes import promote_dtype
 from flax.linen.module import Module, compact
+from snoring.config import args
 from typing import (
   Any,
   Callable,
@@ -99,7 +100,7 @@ class MyConv(nn.Module):
   feature_group_count: int = 1
   use_bias: bool = True
   mask: Optional[Array] = None
-  dtype: Optional[Dtype] = None
+  dtype: Optional[Dtype] = args['input_dtype']
   param_dtype: Dtype = jnp.float32
   precision: PrecisionLike = None
   kernel_init: Callable[[PRNGKey, Shape, Dtype], Array] = default_kernel_init
