@@ -179,6 +179,7 @@ class AudiosetModule(DataModule):
         dataset = dataset.shuffle(shuffle_buffer_size)
 
         dataset = dataset.batch(self.args['batch_size'] * self.args['device_count'], drop_remainder=drop_remainder)
+        dataset = dataset.repeat()
         
         # We exemplify augmentation using RandAugment
         # if augment:
