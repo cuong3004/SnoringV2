@@ -9,6 +9,8 @@ from flax.training.common_utils import shard
 # import tensorflow_io as tfio
 from typing import Iterable
 
+from augmentations import crop_resize, mix_up, random_linear_fader
+
 class DataModule(HyperParameters):
     """The base class of data.
 
@@ -177,13 +179,17 @@ class AudiosetModule(DataModule):
                     .map(self.read_labeled_tfrecord,
                         num_parallel_calls=tf.data.experimental.AUTOTUNE)
         dataset = dataset.shuffle(shuffle_buffer_size)
+        
+        if augment:
+            dataset = dataset.map(crop_resize, num_parallel_calls=AUTO)
 
         dataset = dataset.batch(self.args['batch_size'] * self.args['device_count'], drop_remainder=drop_remainder)
         dataset = dataset.repeat()
         
         # We exemplify augmentation using RandAugment
-        # if augment:
-            # dataset = dataset.map(tf_randaugment, num_parallel_calls=AUTO)
+        if augment:
+            dataset = dataset.map(mix_up, num_parallel_calls=AUTO)
+            dataset = dataset.map(random_linear_fader, num_parallel_calls=AUTO)
 
         dataset = dataset.map(self.min_max_normalize)
         
